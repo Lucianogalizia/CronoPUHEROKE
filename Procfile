@@ -1,1 +1,1 @@
-web: gunicorn CronoPu:aplicación
+web: gunicorn CronoPu:app
