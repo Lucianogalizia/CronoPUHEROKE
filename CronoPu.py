@@ -316,15 +316,28 @@ def assign():
         while len(seleccionados) < 3:
             seleccionados.append(("N/A", 1, 1))
 
+        # Se obtiene el tiempo planificado para el candidato N+1
         tiempo_planificado_n1_series = df[df["POZO"] == seleccionados[0][0]]["TIEMPO PLANIFICADO"]
         tiempo_planificado_n1 = tiempo_planificado_n1_series.iloc[0] if not tiempo_planificado_n1_series.empty else 1
-
-        suspension = (neta_actual / seleccionados[0][1]) * (seleccionados[0][2] * 0.5 + tiempo_planificado_n1)
-        recomendacion = (
-            "Abandonar pozo actual y moverse al N+1"
-            if (neta_actual / tiempo_restante) < suspension
-            else "Continuar en pozo actual"
-        )
+        
+        # Se extrae la NETA del candidato N+1 desde el DataFrame
+        registro_n1 = df[df["POZO"] == seleccionados[0][0]].iloc[0]
+        neta_n1 = registro_n1["NETA [M3/D]"]
+        
+        # Se calcula el coeficiente del candidato N+1:
+        #   neta del N+1 dividido por (0.5 * distancia entre actual y N+1 + tiempo planificado para N+1)
+        coeficiente_n1 = neta_n1 / ((0.5 * seleccionados[0][2]) + tiempo_planificado_n1)
+        
+        # Se calcula el coeficiente del pozo actual:
+        #   neta_actual / tiempo_restante
+        coeficiente_actual = neta_actual / tiempo_restante
+        
+        # Se compara y se decide la recomendación:
+        if coeficiente_actual > coeficiente_n1:
+            recomendacion = "Abandonar pozo actual y moverse al N+1"
+        else:
+            recomendacion = "Continuar en pozo actual"
+              
 
         matriz_prioridad.append([
             pulling, pozo_actual, neta_actual, tiempo_restante,
