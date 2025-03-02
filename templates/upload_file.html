@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>CronoPU - Análisis de Pulling 🚛</h1>
+  <form method="post" enctype="multipart/form-data" class="mt-4">
+    <div class="mb-3">
+      <label>📂 Subí el archivo Excel con el cronograma:</label>
+      <input type="file" name="file" accept=".xlsx" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-custom">Subir</button>
+  </form>
+{% endblock %}
