@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>2. Selección de Pozos para Pulling</h2>
+  <form method="post">
+    <p>Selecciona el pozo y define el tiempo restante para cada Pulling</p>
+    {{ form_html|safe }}
+    <button type="submit" class="btn btn-custom">Confirmar Selección de Pulling</button>
+  </form>
+{% endblock %}
