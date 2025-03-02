@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>3. Ingreso de HS Disponibilidad de Equipo</h2>
+  <form method="post">
+    <p>Ingresa la disponibilidad de HS para cada pozo</p>
+    {{ form_fields|safe }}
+    <button type="submit" class="btn btn-custom">Confirmar HS Disponibilidad</button>
+  </form>
+{% endblock %}
