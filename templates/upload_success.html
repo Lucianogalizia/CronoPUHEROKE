@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>CronoPU - Análisis de Pulling 🚛</h1>
+  <p>Archivo cargado con éxito. A continuación se muestran los primeros datos:</p>
+  {{ table|safe }}
+  <br>
+  <div class="text-center">
+    <a href="{{ url_for('filter_zonas') }}" class="btn btn-custom">Continuar a Filtrado de Zonas</a>
+  </div>
+{% endblock %}
