@@ -304,7 +304,7 @@ def assign():
         distancia_n1 = seleccionados[0][2]
         coeficiente_n1 = neta_n1 / ((0.5 * distancia_n1) + tiempo_planificado_n1)
 
-        if coeficiente_actual > coeficiente_n1:
+        if coeficiente_actual < coeficiente_n1:
             recomendacion = "Abandonar pozo actual y moverse al N+1"
         else:
             recomendacion = "Continuar en pozo actual"
