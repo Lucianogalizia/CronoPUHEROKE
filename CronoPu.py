@@ -335,7 +335,32 @@ def assign():
     df_prioridad = pd.DataFrame(matriz_prioridad, columns=columns)
 
     flash("Proceso de asignación completado.")
-    table_html = df_prioridad.to_html(classes="table table-striped", index=False)
+    # 1) Creamos el DataFrame normal (como ya lo haces):
+    df_prioridad = pd.DataFrame(matriz_prioridad, columns=columns)
+    
+    # 2) Iniciamos el objeto "style" a partir del DataFrame
+    df_styled = df_prioridad.style
+    
+    # 3) Aplicamos un estilo para poner en negrita y color negro las columnas de pozos
+    df_styled = df_styled.applymap(
+        lambda val: "font-weight: bold; color: black;",
+        subset=["Pozo Actual", "N+1", "N+2", "N+3"]
+    )
+    
+    # 4) Definimos una función para resaltar la Recomendación en rojo o verde
+    def highlight_reco(val):
+        if val == "Abandonar pozo actual y moverse al N+1":
+            return "color: red; font-weight: bold;"
+        else:
+            # Si la recomendación es "Continuar en pozo actual", ponemos color verde
+            return "color: green; font-weight: bold;"
+    
+    # 5) Aplicamos la función anterior a la columna "Recomendación"
+    df_styled = df_styled.applymap(highlight_reco, subset=["Recomendación"])
+    
+    # 6) Convertimos el objeto style a HTML
+    table_html = df_styled.hide_index().render()
+
     return render_template("assign_result.html", table=table_html)
 
 if __name__ == "__main__":
