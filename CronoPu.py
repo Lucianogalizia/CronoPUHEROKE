@@ -332,35 +332,79 @@ def assign():
         "N+2", "Coeficiente N+2", "Distancia N+2 (km)",
         "N+3", "Coeficiente N+3", "Distancia N+3 (km)", "Recomendación"
     ]
-    df_prioridad = pd.DataFrame(matriz_prioridad, columns=columns)
-
-    flash("Proceso de asignación completado.")
-    # 1) Creamos el DataFrame normal (como ya lo haces):
+        
+    # Después de construir df_prioridad y antes de renderizar la plantilla:
     df_prioridad = pd.DataFrame(matriz_prioridad, columns=columns)
     
-    # 2) Iniciamos el objeto "style" a partir del DataFrame
+    # Definimos una función para colorear la Recomendación
+    def highlight_reco(val):
+        if "Abandonar" in val:
+            return "color: red; font-weight: bold;"
+        else:
+            return "color: green; font-weight: bold;"
+    
+    # Creamos el objeto "style"
     df_styled = df_prioridad.style
     
-    # 3) Aplicamos un estilo para poner en negrita y color negro las columnas de pozos
+    # Aplicamos distintos métodos en cadena o en pasos separados:
+    # 1) Ocultamos el índice
+    df_styled = df_styled.hide_index()
+    
+    # 2) Alineamos el texto al centro, evitamos saltos de línea
+    df_styled = df_styled.set_properties(
+        **{
+            "text-align": "center",
+            "white-space": "nowrap",
+        }
+    )
+    
+    # 3) Formateamos todos los valores numéricos con 2 decimales (puedes ajustar)
+    df_styled = df_styled.format(precision=2)
+    
+    # 4) Estilos generales para la tabla:
+    #    - Fondo en filas pares
+    #    - Encabezados con fondo gris claro
+    df_styled = df_styled.set_table_styles([
+        {
+            "selector": "th",
+            "props": [
+                ("background-color", "#f8f9fa"),
+                ("color", "#333"),
+                ("font-weight", "bold"),
+                ("text-align", "center"),
+            ],
+        },
+        {
+            "selector": "td",
+            "props": [
+                ("padding", "8px"),
+            ],
+        },
+        {
+            # Fila par: color de fondo suave
+            "selector": "tbody tr:nth-child(even)",
+            "props": [("background-color", "#f2f2f2")],
+        },
+    ])
+    
+    # 5) Negrita para las columnas de pozos
     df_styled = df_styled.applymap(
         lambda val: "font-weight: bold; color: black;",
         subset=["Pozo Actual", "N+1", "N+2", "N+3"]
     )
     
-    # 4) Definimos una función para resaltar la Recomendación en rojo o verde
-    def highlight_reco(val):
-        if val == "Abandonar pozo actual y moverse al N+1":
-            return "color: red; font-weight: bold;"
-        else:
-            # Si la recomendación es "Continuar en pozo actual", ponemos color verde
-            return "color: green; font-weight: bold;"
-    
-    # 5) Aplicamos la función anterior a la columna "Recomendación"
+    # 6) Rojo/verde en la columna "Recomendación"
     df_styled = df_styled.applymap(highlight_reco, subset=["Recomendación"])
     
-    # 6) Convertimos el objeto style a HTML
-    table_html = df_styled.hide_index().render()
+    # 7) Convertimos a HTML
+    table_html = df_styled.render()
+    
+    # Finalmente, pasamos table_html a la plantilla
+    flash("Proceso de asignación completado.")
+    return render_template("assign_result.html", table=table_html)
 
+
+  
     return render_template("assign_result.html", table=table_html)
 
 if __name__ == "__main__":
